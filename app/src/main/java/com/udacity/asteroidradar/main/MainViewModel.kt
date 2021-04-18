@@ -22,11 +22,12 @@ class MainViewModel : ViewModel() {
         NeoApi.retrofitService.getAsteroids()
             .enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
-                    TODO("Not yet implemented")
+                    _response.value = response.body()
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    // TODO("Check code before released it")
+                    _response.value = "Failure: " + t.message
                 }
             })
         _response.value = "Not implemented yet!"
