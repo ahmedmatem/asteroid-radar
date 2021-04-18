@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.network
 
 import com.udacity.asteroidradar.Constants
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -12,7 +13,7 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface NeoApiService {
-    @GET("browse")
+    @GET("browse?api_key=" + Constants.NASA_API_KEY)
     fun getAsteroids() : Call<String>
 }
 
