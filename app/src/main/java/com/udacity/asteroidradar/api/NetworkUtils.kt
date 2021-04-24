@@ -2,6 +2,7 @@ package com.udacity.asteroidradar.api
 
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.PictureOfDay
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,13 +34,22 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
             val isPotentiallyHazardous = asteroidJson
                 .getBoolean("is_potentially_hazardous_asteroid")
 
-            val asteroid = Asteroid(id, codename, formattedDate, absoluteMagnitude,
-                estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous)
+            val asteroid = Asteroid(
+                id, codename, formattedDate, absoluteMagnitude,
+                estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous
+            )
             asteroidList.add(asteroid)
         }
     }
 
     return asteroidList
+}
+
+fun parseApodJsonResult(jsonResult: JSONObject): PictureOfDay {
+    val mediaType = jsonResult.getString("media_type")
+    val title = jsonResult.getString("title")
+    val url = jsonResult.getString("url")
+    return PictureOfDay(mediaType, title, url)
 }
 
 private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
