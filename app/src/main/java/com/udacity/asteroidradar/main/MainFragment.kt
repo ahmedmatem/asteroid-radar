@@ -25,7 +25,7 @@ class MainFragment : Fragment() {
         val adapter = AsteroidAdapter()
         binding.asteroidRecycler.adapter = adapter
 
-        viewModel.response.observe(viewLifecycleOwner, Observer {
+        viewModel.asteroidList.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
             }
