@@ -1,8 +1,7 @@
-package com.udacity.asteroidradar.adapter
+package com.udacity.asteroidradar.utils.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.NonNull
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -26,13 +25,8 @@ class AsteroidAdapter :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Asteroid) {
-            binding.codeName.text = item.codename
-            binding.closeDate.text = item.closeApproachDate
-            if (item.isPotentiallyHazardous) {
-                binding.hazardIcon.setImageResource(R.drawable.ic_status_potentially_hazardous)
-            } else {
-                binding.hazardIcon.setImageResource(R.drawable.ic_status_normal)
-            }
+            binding.asteroid = item
+            binding.executePendingBindings()
         }
 
         companion object {

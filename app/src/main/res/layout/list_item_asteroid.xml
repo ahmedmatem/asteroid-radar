@@ -36,7 +36,8 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/guideline1"
             app:layout_constraintStart_toStartOf="parent"
-            tools:text="(KB 63245)" />
+            tools:text="(KB 63245)"
+            app:codeName="@{asteroid}"/>
 
         <TextView
             android:id="@+id/close_date"
@@ -46,7 +47,8 @@
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
-            tools:text="2021-04-24" />
+            tools:text="2021-04-24"
+            app:closeApproachDate="@{asteroid}"/>
 
         <ImageView
             android:id="@+id/hazard_icon"
@@ -57,6 +59,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_status_potentially_hazardous" />
+            app:srcCompat="@drawable/ic_status_potentially_hazardous"
+            app:hazardImage="@{asteroid}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
