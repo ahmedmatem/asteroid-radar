@@ -1,5 +1,6 @@
 package com.udacity.asteroidradar.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,6 +30,8 @@ class MainViewModel : ViewModel() {
         val now = Calendar.getInstance().time
         // set startDate from now
         val startDate = dateFormat.format(now)
+
+        Log.i("MainViewModel", Constants.NEO_API_BASE_URL + "feed?start_date=${startDate}&api_key=${Constants.NASA_API_KEY}")
 
         NeoApi.retrofitService.getNextSevenDaysAsteroidsStartFrom(startDate, Constants.NASA_API_KEY)
             .enqueue(object : Callback<String> {
