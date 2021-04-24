@@ -20,13 +20,10 @@ class AsteroidAdapter : RecyclerView.Adapter<AsteroidAdapter.AsteroidViewHolder>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AsteroidViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater.inflate(R.layout.list_item_asteroid, parent, false)
-        return AsteroidViewHolder(view)
-
+        return AsteroidViewHolder.from(parent)
     }
 
-    class AsteroidViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class AsteroidViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val codeName = itemView.findViewById<TextView>(R.id.code_name)
         val closeDate = itemView.findViewById<TextView>(R.id.close_date)
         val hazardIcon: ImageView = itemView.findViewById(R.id.hazard_icon)
@@ -38,6 +35,14 @@ class AsteroidAdapter : RecyclerView.Adapter<AsteroidAdapter.AsteroidViewHolder>
                 hazardIcon.setImageResource(R.drawable.ic_status_potentially_hazardous)
             } else {
                 hazardIcon.setImageResource(R.drawable.ic_status_normal)
+            }
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): AsteroidViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val view = layoutInflater.inflate(R.layout.list_item_asteroid, parent, false)
+                return AsteroidViewHolder(view)
             }
         }
     }
