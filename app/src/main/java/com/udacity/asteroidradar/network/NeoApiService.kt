@@ -18,11 +18,11 @@ import retrofit2.http.Query
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(ScalarsConverterFactory.create())
 //    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(Constants.NEO_API_BASE_URL)
+    .baseUrl(Constants.BASE_URL)
     .build()
 
 interface NeoApiService {
-    @GET("feed")
+    @GET("neo/rest/v1/feed")
     fun getNextSevenDaysAsteroidsStartFrom(
         @Query("start_date") startDate: String,
         @Query("api_key") apiKey: String

@@ -33,8 +33,6 @@ class MainViewModel : ViewModel() {
         // set startDate from now
         val startDate = dateFormat.format(now)
 
-        Log.i("MainViewModel", Constants.NEO_API_BASE_URL + "feed?start_date=${startDate}&api_key=${Constants.NASA_API_KEY}")
-
         NeoApi.retrofitService.getNextSevenDaysAsteroidsStartFrom(startDate, Constants.NASA_API_KEY)
             .enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {

@@ -1,4 +1,4 @@
-package com.udacity.asteroidradar.utils.adapter
+package com.udacity.asteroidradar
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -21,7 +21,7 @@ class AsteroidAdapter :
         return AsteroidViewHolder.from(parent)
     }
 
-    class AsteroidViewHolder private constructor(val binding: ListItemAsteroidBinding) :
+    class AsteroidViewHolder private constructor(private val binding: ListItemAsteroidBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Asteroid) {
