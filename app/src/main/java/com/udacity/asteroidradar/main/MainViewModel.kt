@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.network.NeoApi
@@ -14,11 +15,12 @@ import retrofit2.Response
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainViewModel : ViewModel() {
-    private val _response = MutableLiveData<String>()
+    private val _response = MutableLiveData<ArrayList<Asteroid>>()
 
-    val response: LiveData<String>
+    val response: LiveData<ArrayList<Asteroid>>
         get() = _response
 
     init {
@@ -38,13 +40,11 @@ class MainViewModel : ViewModel() {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     response.body()?.let {
                         _response.value = parseAsteroidsJsonResult(JSONObject(response.body()))
-                            .size.toString()
                     }
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
                     // TODO("Check code before released it")
-                    _response.value = "Failure: " + t.message
                 }
             })
     }

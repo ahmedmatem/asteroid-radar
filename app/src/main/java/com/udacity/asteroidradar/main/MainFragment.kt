@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.adapter.AsteroidAdapter
+import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
@@ -25,11 +26,11 @@ class MainFragment : Fragment() {
         val adapter = AsteroidAdapter()
         binding.asteroidRecycler.adapter = adapter
 
-//        viewModel.response.observe(viewLifecycleOwner, Observer {
-//            it?.let {
-//                adapter.data = it
-//            }
-//        })
+        viewModel.response.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.submitList(it)
+            }
+        })
 
         setHasOptionsMenu(true)
 

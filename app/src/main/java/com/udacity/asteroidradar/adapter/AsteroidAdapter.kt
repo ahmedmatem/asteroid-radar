@@ -1,21 +1,20 @@
 package com.udacity.asteroidradar.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.annotation.NonNull
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.R
+import com.udacity.asteroidradar.databinding.ListItemAsteroidBinding
 
-class AsteroidAdapter : RecyclerView.Adapter<AsteroidAdapter.AsteroidViewHolder>() {
-    var data = listOf<Asteroid>()
-
-    override fun getItemCount() = data.size
+class AsteroidAdapter :
+    ListAdapter<Asteroid, AsteroidAdapter.AsteroidViewHolder>(AsteroidDiffCallback()) {
 
     override fun onBindViewHolder(holder: AsteroidViewHolder, position: Int) {
-        val item = data[position]
+        val item = getItem(position)
         holder.bind(item)
     }
 
@@ -23,27 +22,38 @@ class AsteroidAdapter : RecyclerView.Adapter<AsteroidAdapter.AsteroidViewHolder>
         return AsteroidViewHolder.from(parent)
     }
 
-    class AsteroidViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val codeName = itemView.findViewById<TextView>(R.id.code_name)
-        val closeDate = itemView.findViewById<TextView>(R.id.close_date)
-        val hazardIcon: ImageView = itemView.findViewById(R.id.hazard_icon)
+    class AsteroidViewHolder private constructor(val binding: ListItemAsteroidBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Asteroid) {
-            codeName.text = item.codename
-            closeDate.text = item.closeApproachDate
+            binding.codeName.text = item.codename
+            binding.closeDate.text = item.closeApproachDate
             if (item.isPotentiallyHazardous) {
-                hazardIcon.setImageResource(R.drawable.ic_status_potentially_hazardous)
+                binding.hazardIcon.setImageResource(R.drawable.ic_status_potentially_hazardous)
             } else {
-                hazardIcon.setImageResource(R.drawable.ic_status_normal)
+                binding.hazardIcon.setImageResource(R.drawable.ic_status_normal)
             }
         }
 
         companion object {
             fun from(parent: ViewGroup): AsteroidViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(R.layout.list_item_asteroid, parent, false)
-                return AsteroidViewHolder(view)
+                val binding = ListItemAsteroidBinding.inflate(layoutInflater, parent, false)
+                return AsteroidViewHolder(binding)
             }
         }
     }
+}
+
+class AsteroidDiffCallback : DiffUtil.ItemCallback<Asteroid>() {
+    override fun areItemsTheSame(oldItem: Asteroid, newItem: Asteroid): Boolean {
+        TODO("Not yet implemented")
+        return false
+    }
+
+    override fun areContentsTheSame(oldItem: Asteroid, newItem: Asteroid): Boolean {
+        TODO("Not yet implemented")
+        return false
+    }
+
 }
