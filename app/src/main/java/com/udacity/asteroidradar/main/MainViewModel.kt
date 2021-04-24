@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.PictureOfDay
-import com.udacity.asteroidradar.api.parseApodJsonResult
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.network.NeoApi
 import org.json.JSONObject
@@ -34,16 +33,16 @@ class MainViewModel : ViewModel() {
 
     private fun getPictureOfDay() {
         NeoApi.retrofitService.getApod(Constants.API_KEY)
-            .enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
+            .enqueue(object : Callback<PictureOfDay> {
+                override fun onResponse(call: Call<PictureOfDay>, response: Response<PictureOfDay>) {
                     if (response.isSuccessful) {
                         response.body()?.let {
-                            _pictureOfDay.value = parseApodJsonResult(JSONObject(it))
+                            _pictureOfDay.value = it
                         }
                     }
                 }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
+                override fun onFailure(call: Call<PictureOfDay>, t: Throwable) {
                     // TODO("Check code before released it")
                 }
             })
