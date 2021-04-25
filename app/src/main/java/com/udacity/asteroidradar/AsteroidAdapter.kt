@@ -1,13 +1,10 @@
 package com.udacity.asteroidradar
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.ListItemAsteroidBinding
 
 class AsteroidAdapter(private val onClickListener: OnClickListener) :
