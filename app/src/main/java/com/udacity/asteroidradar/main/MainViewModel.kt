@@ -20,21 +20,32 @@ enum class NeoApiStatus { LOADING, ERROR, DONE }
 
 class MainViewModel : ViewModel() {
     private val _neoStatus = MutableLiveData<NeoApiStatus>()
-    private val _pictureOfDay = MutableLiveData<PictureOfDay>()
-    private val _asteroidList = MutableLiveData<ArrayList<Asteroid>>()
-
     val neoStatus: LiveData<NeoApiStatus>
         get() = _neoStatus
 
+    private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     val pictureOfDay: LiveData<PictureOfDay>
         get() = _pictureOfDay
 
+    private val _asteroidList = MutableLiveData<ArrayList<Asteroid>>()
     val asteroidList: LiveData<ArrayList<Asteroid>>
         get() = _asteroidList
+
+    private val _navigateToSelectedAsteroidDetails = MutableLiveData<Asteroid?>()
+    val navigateToSelectedAsteroidDetails: LiveData<Asteroid?>
+        get() = _navigateToSelectedAsteroidDetails
 
     init {
         getPictureOfDay()
         getNextSevenDaysAsteroids()
+    }
+
+    fun displayAsteroidDetails(asteroid: Asteroid) {
+        _navigateToSelectedAsteroidDetails.value = asteroid
+    }
+
+    fun displayAsteroidDetailsComplete() {
+        _navigateToSelectedAsteroidDetails.value = null
     }
 
     private fun getPictureOfDay() {
