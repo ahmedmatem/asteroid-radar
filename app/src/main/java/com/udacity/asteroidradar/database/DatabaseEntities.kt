@@ -1,14 +1,12 @@
 package com.udacity.asteroidradar.database
 
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.Transformations.map
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.udacity.asteroidradar.Asteroid
 
-@Entity
-data class AsteroidEntity(
+@Entity(tableName = "asteroid")
+data class DatabaseAsteroid(
     @PrimaryKey val id: Long,
     @ColumnInfo(name = "code_name") val codename: String,
     @ColumnInfo(name = "close_approach_date") val closeApproachDate: String,
@@ -20,7 +18,7 @@ data class AsteroidEntity(
 )
 
 // Extension function which converts from database objects to domain objects
-fun List<AsteroidEntity>.asDomainModel(): List<Asteroid> {
+fun List<DatabaseAsteroid>.asDomainModel(): List<Asteroid> {
     return map {
         Asteroid(
             id = it.id,
