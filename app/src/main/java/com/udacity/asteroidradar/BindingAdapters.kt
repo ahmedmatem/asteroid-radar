@@ -1,9 +1,13 @@
 package com.udacity.asteroidradar
 
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.udacity.asteroidradar.main.NeoApiStatus
+import com.udacity.asteroidradar.network.NeoApi
 
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
@@ -52,4 +56,19 @@ fun bindPictureOfDay(imageView: ImageView, pictureOfDay: PictureOfDay?) {
         }
     }
 
+}
+
+@BindingAdapter("neoApiStatus")
+fun bindStatus(progressBar: ProgressBar, status: NeoApiStatus) {
+    when (status) {
+        NeoApiStatus.LOADING -> {
+            progressBar.visibility = View.VISIBLE
+        }
+        NeoApiStatus.ERROR -> {
+            progressBar.visibility = View.GONE
+        }
+        NeoApiStatus.DONE -> {
+            progressBar.visibility = View.GONE
+        }
+    }
 }

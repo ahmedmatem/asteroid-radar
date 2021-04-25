@@ -16,9 +16,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+enum class NeoApiStatus { LOADING, ERROR, DONE }
+
 class MainViewModel : ViewModel() {
+    private val _neoStatus = MutableLiveData<NeoApiStatus>()
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     private val _asteroidList = MutableLiveData<ArrayList<Asteroid>>()
+
+    val neoStatus: LiveData<NeoApiStatus>
+        get() = _neoStatus
 
     val pictureOfDay: LiveData<PictureOfDay>
         get() = _pictureOfDay
@@ -34,7 +40,10 @@ class MainViewModel : ViewModel() {
     private fun getPictureOfDay() {
         NeoApi.retrofitService.getApod(Constants.API_KEY)
             .enqueue(object : Callback<PictureOfDay> {
-                override fun onResponse(call: Call<PictureOfDay>, response: Response<PictureOfDay>) {
+                override fun onResponse(
+                    call: Call<PictureOfDay>,
+                    response: Response<PictureOfDay>
+                ) {
                     if (response.isSuccessful) {
                         response.body()?.let {
                             _pictureOfDay.value = it
@@ -54,16 +63,20 @@ class MainViewModel : ViewModel() {
         // set startDate from now
         val startDate = dateFormat.format(now)
 
+        _neoStatus.value = NeoApiStatus.LOADING
         NeoApi.retrofitService.getNextSevenDaysAsteroidsStartFrom(startDate, Constants.API_KEY)
             .enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     response.body()?.let {
+                        _neoStatus.value = NeoApiStatus.DONE
                         _asteroidList.value = parseAsteroidsJsonResult(JSONObject(response.body()))
                     }
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
                     // TODO("Check code before released it")
+                    _neoStatus.value = NeoApiStatus.ERROR
+                    _asteroidList.value = ArrayList()
                 }
             })
     }
