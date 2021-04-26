@@ -1,24 +1,30 @@
 package com.udacity.asteroidradar.main
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
+import com.udacity.asteroidradar.database.AsteroidsDatabase
+import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.network.NeoApi
+import com.udacity.asteroidradar.repository.AsteroidsRepository
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.IllegalArgumentException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 enum class NeoApiStatus { LOADING, ERROR, DONE }
 
-class MainViewModel : ViewModel() {
+class MainViewModel(context: Context) : ViewModel() {
     private val _neoStatus = MutableLiveData<NeoApiStatus>()
     val neoStatus: LiveData<NeoApiStatus>
         get() = _neoStatus
@@ -34,6 +40,9 @@ class MainViewModel : ViewModel() {
     private val _navigateToSelectedAsteroidDetails = MutableLiveData<Asteroid?>()
     val navigateToSelectedAsteroidDetails: LiveData<Asteroid?>
         get() = _navigateToSelectedAsteroidDetails
+
+    private val database = getDatabase(context)
+    private val repository = AsteroidsRepository(database)
 
     init {
         getPictureOfDay()
@@ -85,10 +94,22 @@ class MainViewModel : ViewModel() {
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
-                    // TODO("Check code before released it")
                     _neoStatus.value = NeoApiStatus.ERROR
                     _asteroidList.value = ArrayList()
                 }
             })
     }
+
+    /**
+     * Factory to construct MainViewModel with parameter
+     */
+    class Factory(val context: Context) : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            if(modelClass.isAssignableFrom(MainViewModel::class.java)){
+                return MainViewModel(context) as T
+            }
+            throw IllegalArgumentException("Unable to construct ViewModel.")
+        }
+    }
+
 }
