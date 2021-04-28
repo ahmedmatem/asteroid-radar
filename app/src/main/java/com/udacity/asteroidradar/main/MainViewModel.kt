@@ -1,18 +1,20 @@
 package com.udacity.asteroidradar.main
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.PictureOfDay
+import com.udacity.asteroidradar.api.Result
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
-import com.udacity.asteroidradar.database.AsteroidsDatabase
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.network.NeoApi
+import com.udacity.asteroidradar.network.asDatabaseModel
 import com.udacity.asteroidradar.repository.AsteroidsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,21 +35,28 @@ class MainViewModel(context: Context) : ViewModel() {
     val pictureOfDay: LiveData<PictureOfDay>
         get() = _pictureOfDay
 
-    private val _asteroidList = MutableLiveData<ArrayList<Asteroid>>()
-    val asteroidList: LiveData<ArrayList<Asteroid>>
-        get() = _asteroidList
-
     private val _navigateToSelectedAsteroidDetails = MutableLiveData<Asteroid?>()
     val navigateToSelectedAsteroidDetails: LiveData<Asteroid?>
         get() = _navigateToSelectedAsteroidDetails
 
+    private val viewModelJob = SupervisorJob()
+    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
     private val database = getDatabase(context)
-    private val repository = AsteroidsRepository(database)
+    private val asteroidsRepository = AsteroidsRepository(database)
 
     init {
+        viewModelScope.launch {
+            _neoStatus.value = NeoApiStatus.LOADING
+            asteroidsRepository.refreshAsteroids()
+            _neoStatus.value = NeoApiStatus.DONE
+        }
+
         getPictureOfDay()
-        getNextSevenDaysAsteroids()
     }
+
+//    val asteroidList = asteroidsRepository.asteroids
+    val asteroidList = asteroidsRepository.weekAsteroids
 
     fun displayAsteroidDetails(asteroid: Asteroid) {
         _navigateToSelectedAsteroidDetails.value = asteroid
@@ -61,8 +70,7 @@ class MainViewModel(context: Context) : ViewModel() {
         NeoApi.retrofitService.getApod(Constants.API_KEY)
             .enqueue(object : Callback<PictureOfDay> {
                 override fun onResponse(
-                    call: Call<PictureOfDay>,
-                    response: Response<PictureOfDay>
+                    call: Call<PictureOfDay>, response: Response<PictureOfDay>
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let {
@@ -72,30 +80,7 @@ class MainViewModel(context: Context) : ViewModel() {
                 }
 
                 override fun onFailure(call: Call<PictureOfDay>, t: Throwable) {
-                    // TODO("Check code before released it")
-                }
-            })
-    }
-
-    private fun getNextSevenDaysAsteroids() {
-        val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
-        val now = Calendar.getInstance().time
-        // set startDate from now
-        val startDate = dateFormat.format(now)
-
-        _neoStatus.value = NeoApiStatus.LOADING
-        NeoApi.retrofitService.getNextSevenDaysAsteroidsStartFrom(startDate, Constants.API_KEY)
-            .enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    response.body()?.let {
-                        _neoStatus.value = NeoApiStatus.DONE
-                        _asteroidList.value = parseAsteroidsJsonResult(JSONObject(response.body()))
-                    }
-                }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    _neoStatus.value = NeoApiStatus.ERROR
-                    _asteroidList.value = ArrayList()
+                    _pictureOfDay.value = PictureOfDay(mediaType = "video", "", "")
                 }
             })
     }
@@ -103,9 +88,9 @@ class MainViewModel(context: Context) : ViewModel() {
     /**
      * Factory to construct MainViewModel with parameter
      */
-    class Factory(val context: Context) : ViewModelProvider.Factory {
+    class Factory(private val context: Context) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            if(modelClass.isAssignableFrom(MainViewModel::class.java)){
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                 return MainViewModel(context) as T
             }
             throw IllegalArgumentException("Unable to construct ViewModel.")

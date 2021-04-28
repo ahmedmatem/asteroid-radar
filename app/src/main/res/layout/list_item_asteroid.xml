@@ -48,6 +48,7 @@
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="2021-04-25"
+            android:textColor="@color/white"
             android:text="@{asteroid.closeApproachDate}"/>
 
         <ImageView

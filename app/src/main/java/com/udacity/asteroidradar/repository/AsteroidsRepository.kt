@@ -1,8 +1,10 @@
 package com.udacity.asteroidradar.repository
 
+import android.text.format.DateUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.database.AsteroidsDatabase
 import com.udacity.asteroidradar.database.asDomainModel
@@ -23,10 +25,15 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
             it.asDomainModel()
         }
 
-    suspend fun refreshAsteroids(startDate: String, apiKey: String) {
-        withContext(Dispatchers.IO){
+    val weekAsteroids: LiveData<List<Asteroid>> = Transformations.map(
+        database.asteroidDao.getWeekAsteroids(getTodayFormatted())){
+            it.asDomainModel()
+        }
+
+    suspend fun refreshAsteroids() {
+        withContext(Dispatchers.IO) {
             val response = NeoApi.retrofitService
-                .getNextSevenDaysAsteroidsStartFrom(startDate, apiKey).await()
+                .getNextSevenDaysAsteroidsStartFrom(Constants.API_KEY).await()
             val asteroids = parseAsteroidsJsonResult(JSONObject(response))
             database.asteroidDao.insertAll(*asteroids.asDatabaseModel())
         }

@@ -25,10 +25,7 @@ private val retrofit = Retrofit.Builder()
 
 interface NeoApiService {
     @GET("neo/rest/v1/feed")
-    fun getNextSevenDaysAsteroidsStartFrom(
-        @Query("start_date") startDate: String,
-        @Query("api_key") apiKey: String
-    ): Call<String>
+    fun getNextSevenDaysAsteroidsStartFrom(@Query("api_key") apiKey: String): Call<String>
 
     // Get Astronomy Picture of the Day
     @GET("planetary/apod")
