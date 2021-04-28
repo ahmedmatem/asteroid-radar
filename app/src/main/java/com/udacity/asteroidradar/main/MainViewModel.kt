@@ -46,8 +46,8 @@ class MainViewModel(context: Context) : ViewModel() {
     private val asteroidsRepository = AsteroidsRepository(database)
 
     init {
+        _neoStatus.value = NeoApiStatus.LOADING
         viewModelScope.launch {
-            _neoStatus.value = NeoApiStatus.LOADING
             asteroidsRepository.refreshAsteroids()
             _neoStatus.value = NeoApiStatus.DONE
         }
