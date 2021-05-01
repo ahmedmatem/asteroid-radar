@@ -19,6 +19,9 @@ interface AsteroidDao {
     @Query("SELECT * FROM asteroids ORDER BY close_approach_date")
     fun getSavedAsteroids(): List<DatabaseAsteroid>
 
+    @Query("DELETE FROM asteroids WHERE close_approach_date = :yesterday")
+    fun deleteYesterdayData(yesterday: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg asteroids: DatabaseAsteroid)
 }

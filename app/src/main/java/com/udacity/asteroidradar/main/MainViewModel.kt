@@ -13,6 +13,7 @@ import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.lang.IllegalArgumentException
 
 enum class NeoApiStatus { LOADING, ERROR, DONE }
@@ -41,8 +42,14 @@ class MainViewModel(context: Context) : ViewModel() {
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     init {
+        _neoStatus.value = NeoApiStatus.LOADING
         viewModelScope.launch {
-            asteroidsRepository.refreshAsteroids()
+            try {
+                asteroidsRepository.refreshAsteroids()
+                _neoStatus.value = NeoApiStatus.DONE
+            } catch (e: Exception) {
+                _neoStatus.value = NeoApiStatus.ERROR
+            }
             getPictureOfDay()
         }
     }

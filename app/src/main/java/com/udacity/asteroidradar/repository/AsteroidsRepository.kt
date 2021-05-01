@@ -1,7 +1,6 @@
 package com.udacity.asteroidradar.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
@@ -14,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import retrofit2.await
+import java.lang.Exception
 
 enum class AsteroidsFilter() { TODAY, WEEK, SAVED }
 
@@ -45,12 +45,32 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
         }
     }
 
+    //    suspend fun refreshAsteroids() {
+    //        withContext(Dispatchers.IO) {
+    //            val response = NeoApi.retrofitService
+    //                .getNextSevenDaysAsteroids(Constants.API_KEY).await()
+    //            val asteroids = parseAsteroidsJsonResult(JSONObject(response))
+    //            database.asteroidDao.insertAll(*asteroids.asDatabaseModel())
+    //        }
+    //    }
     suspend fun refreshAsteroids() {
         withContext(Dispatchers.IO) {
-            val response = NeoApi.retrofitService
-                .getNextSevenDaysAsteroids(Constants.API_KEY).await()
-            val asteroids = parseAsteroidsJsonResult(JSONObject(response))
-            database.asteroidDao.insertAll(*asteroids.asDatabaseModel())
+            val responseDeferred = NeoApi.retrofitService
+                .getNextSevenDaysAsteroids(Constants.API_KEY)
+            try {
+                val response = responseDeferred.await()
+                val asteroids = parseAsteroidsJsonResult(JSONObject(response))
+                database.asteroidDao.insertAll(*asteroids.asDatabaseModel())
+            } catch (e: Exception) {
+                throw Exception()
+            }
+
+        }
+    }
+
+    suspend fun removePreviousDayAsteroids() {
+        withContext(Dispatchers.IO) {
+            database.asteroidDao.deleteYesterdayData(getYesterdayFormatted())
         }
     }
 }
