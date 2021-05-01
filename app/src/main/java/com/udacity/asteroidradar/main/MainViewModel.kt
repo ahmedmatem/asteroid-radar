@@ -5,24 +5,15 @@ import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.PictureOfDay
-import com.udacity.asteroidradar.api.Result
-import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.network.NeoApi
-import com.udacity.asteroidradar.network.asDatabaseModel
+import com.udacity.asteroidradar.repository.AsteroidsFilter
 import com.udacity.asteroidradar.repository.AsteroidsRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import org.json.JSONObject
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.lang.IllegalArgumentException
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
 enum class NeoApiStatus { LOADING, ERROR, DONE }
 
@@ -39,24 +30,24 @@ class MainViewModel(context: Context) : ViewModel() {
     val navigateToSelectedAsteroidDetails: LiveData<Asteroid?>
         get() = _navigateToSelectedAsteroidDetails
 
-    private val viewModelJob = SupervisorJob()
-    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+    private val _filter = MutableLiveData<AsteroidsFilter>()
+    val filter: LiveData<AsteroidsFilter>
+        get() = _filter
 
     private val database = getDatabase(context)
     private val asteroidsRepository = AsteroidsRepository(database)
 
+    private val viewModelJob = SupervisorJob()
+    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
     init {
-        _neoStatus.value = NeoApiStatus.LOADING
         viewModelScope.launch {
             asteroidsRepository.refreshAsteroids()
-            _neoStatus.value = NeoApiStatus.DONE
+            getPictureOfDay()
         }
-
-        getPictureOfDay()
     }
 
-//    val asteroidList = asteroidsRepository.asteroids
-    val asteroidList = asteroidsRepository.weekAsteroids
+    var asteroidList = asteroidsRepository.asteroids
 
     fun displayAsteroidDetails(asteroid: Asteroid) {
         _navigateToSelectedAsteroidDetails.value = asteroid
@@ -83,6 +74,11 @@ class MainViewModel(context: Context) : ViewModel() {
                     _pictureOfDay.value = PictureOfDay(mediaType = "video", "", "")
                 }
             })
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 
     /**
