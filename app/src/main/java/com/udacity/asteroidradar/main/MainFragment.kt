@@ -45,6 +45,12 @@ class MainFragment : Fragment() {
             }
         })
 
+        viewModel.filterAsteroidList.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.submitList(it)
+            }
+        })
+
         setHasOptionsMenu(true)
 
         return binding.root
@@ -55,23 +61,23 @@ class MainFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return when (item.itemId) {
-//            R.id.show_week_menu -> {
-//                viewModel.updateAsteroidsBy(AsteroidsFilter.WEEK)
-//                true
-//            }
-//            R.id.show_today_menu -> {
-//                viewModel.updateAsteroidsBy(AsteroidsFilter.TODAY)
-//                true
-//            }
-//            R.id.show_saved_menu -> {
-//                viewModel.updateAsteroidsBy(AsteroidsFilter.SAVED)
-//                true
-//            }
-//            else -> {
-//                super.onOptionsItemSelected(item)
-//            }
-//        }
-//    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.show_week_menu -> {
+                viewModel.updateFilterAsteroids(AsteroidsFilter.WEEK)
+                true
+            }
+            R.id.show_today_menu -> {
+                viewModel.updateFilterAsteroids(AsteroidsFilter.TODAY)
+                true
+            }
+            R.id.show_saved_menu -> {
+                viewModel.updateFilterAsteroids(AsteroidsFilter.SAVED)
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
 }
