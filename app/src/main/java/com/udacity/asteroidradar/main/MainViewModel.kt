@@ -30,13 +30,9 @@ class MainViewModel(context: Context) : ViewModel() {
     val navigateToSelectedAsteroidDetails: LiveData<Asteroid?>
         get() = _navigateToSelectedAsteroidDetails
 
-    private val _filterAsteroidList = MutableLiveData<List<Asteroid>>()
-    val filterAsteroidList: LiveData<List<Asteroid>>
-        get() = _filterAsteroidList
-
-    private val _filter = MutableLiveData<AsteroidsFilter>()
-    val filter: LiveData<AsteroidsFilter>
-        get() = _filter
+    private val _filteredAsteroidList = MutableLiveData<List<Asteroid>>()
+    val filteredAsteroidList: LiveData<List<Asteroid>>
+        get() = _filteredAsteroidList
 
     private val database = getDatabase(context)
     private val asteroidsRepository = AsteroidsRepository(database)
@@ -61,9 +57,9 @@ class MainViewModel(context: Context) : ViewModel() {
         _navigateToSelectedAsteroidDetails.value = null
     }
 
-    fun updateFilterAsteroids(filter: AsteroidsFilter) {
+    fun updateFilteredAsteroids(filter: AsteroidsFilter) {
         viewModelScope.launch {
-            _filterAsteroidList.value = asteroidsRepository.getFilterAsteroids(filter)
+            _filteredAsteroidList.value = asteroidsRepository.getFilterAsteroids(filter)
         }
     }
 

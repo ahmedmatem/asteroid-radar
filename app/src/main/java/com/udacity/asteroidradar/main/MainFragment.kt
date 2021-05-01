@@ -45,7 +45,7 @@ class MainFragment : Fragment() {
             }
         })
 
-        viewModel.filterAsteroidList.observe(viewLifecycleOwner, Observer {
+        viewModel.filteredAsteroidList.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
             }
@@ -64,15 +64,15 @@ class MainFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.show_week_menu -> {
-                viewModel.updateFilterAsteroids(AsteroidsFilter.WEEK)
+                viewModel.updateFilteredAsteroids(AsteroidsFilter.WEEK)
                 true
             }
             R.id.show_today_menu -> {
-                viewModel.updateFilterAsteroids(AsteroidsFilter.TODAY)
+                viewModel.updateFilteredAsteroids(AsteroidsFilter.TODAY)
                 true
             }
             R.id.show_saved_menu -> {
-                viewModel.updateFilterAsteroids(AsteroidsFilter.SAVED)
+                viewModel.updateFilteredAsteroids(AsteroidsFilter.SAVED)
                 true
             }
             else -> {
