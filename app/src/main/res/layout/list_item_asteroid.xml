@@ -32,8 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            style="@style/TextAppearance.Title"
             app:layout_constraintBottom_toTopOf="@+id/guideline1"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="(KB 63245)"
@@ -44,11 +43,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textSize="12sp"
+            style="@style/TextAppearance.Subtitle"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="2021-04-25"
-            android:textColor="@color/white"
             android:text="@{asteroid.closeApproachDate}"/>
 
         <ImageView
