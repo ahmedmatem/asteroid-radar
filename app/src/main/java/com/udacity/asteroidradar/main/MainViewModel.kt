@@ -9,6 +9,7 @@ import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.network.NeoApi
 import com.udacity.asteroidradar.repository.AsteroidsFilter
 import com.udacity.asteroidradar.repository.AsteroidsRepository
+import com.udacity.asteroidradar.repository.PodRepository
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,10 +24,6 @@ class MainViewModel(context: Context) : ViewModel() {
     val neoStatus: LiveData<NeoApiStatus>
         get() = _neoStatus
 
-    private val _pictureOfDay = MutableLiveData<PictureOfDay>()
-    val pictureOfDay: LiveData<PictureOfDay>
-        get() = _pictureOfDay
-
     private val _navigateToSelectedAsteroidDetails = MutableLiveData<Asteroid?>()
     val navigateToSelectedAsteroidDetails: LiveData<Asteroid?>
         get() = _navigateToSelectedAsteroidDetails
@@ -37,6 +34,7 @@ class MainViewModel(context: Context) : ViewModel() {
 
     private val database = getDatabase(context)
     private val asteroidsRepository = AsteroidsRepository(database)
+    private val podRepository = PodRepository(database)
 
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -46,15 +44,16 @@ class MainViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             try {
                 asteroidsRepository.refreshAsteroids()
+                podRepository.refreshPod()
                 _neoStatus.value = NeoApiStatus.DONE
             } catch (e: Exception) {
                 _neoStatus.value = NeoApiStatus.ERROR
             }
-            getPictureOfDay()
         }
     }
 
     val asteroidList = asteroidsRepository.asteroids
+    val pod = podRepository.pod
 
     fun displayAsteroidDetails(asteroid: Asteroid) {
         _navigateToSelectedAsteroidDetails.value = asteroid
@@ -68,25 +67,6 @@ class MainViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             _filteredAsteroidList.value = asteroidsRepository.getFilterAsteroids(filter)
         }
-    }
-
-    private fun getPictureOfDay() {
-        NeoApi.retrofitService.getApod(Constants.API_KEY)
-            .enqueue(object : Callback<PictureOfDay> {
-                override fun onResponse(
-                    call: Call<PictureOfDay>, response: Response<PictureOfDay>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            _pictureOfDay.value = it
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<PictureOfDay>, t: Throwable) {
-                    _pictureOfDay.value = PictureOfDay(mediaType = "video", "", "")
-                }
-            })
     }
 
     override fun onCleared() {

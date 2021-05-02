@@ -29,7 +29,7 @@ interface NeoApiService {
 
     // Get Astronomy Picture of the Day
     @GET("planetary/apod")
-    fun getApod(@Query("api_key") apiKey: String): Call<PictureOfDay>
+    fun getPod(@Query("api_key") apiKey: String): Call<PictureOfDay>
 }
 
 object NeoApi {

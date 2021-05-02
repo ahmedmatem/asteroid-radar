@@ -26,33 +26,25 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
     val asteroids: LiveData<List<Asteroid>> = Transformations.map(
         database.asteroidDao.getAsteroids(getTodayFormatted())
     ) {
-        it.asDomainModel()
+        it?.asDomainModel()
     }
 
     suspend fun getFilterAsteroids(filter: AsteroidsFilter): List<Asteroid> {
         return withContext(Dispatchers.IO) {
             when (filter) {
                 AsteroidsFilter.TODAY -> {
-                    database.asteroidDao.getTodayAsteroids(getTodayFormatted()).asDomainModel()
+                    database.asteroidDao.getTodayAsteroids(getTodayFormatted())?.asDomainModel()
                 }
                 AsteroidsFilter.WEEK -> {
-                    database.asteroidDao.getWeekAsteroids(getTodayFormatted()).asDomainModel()
+                    database.asteroidDao.getWeekAsteroids(getTodayFormatted())?.asDomainModel()
                 }
                 else -> {
-                    database.asteroidDao.getSavedAsteroids().asDomainModel()
+                    database.asteroidDao.getSavedAsteroids()?.asDomainModel()
                 }
             }
         }
     }
 
-    //    suspend fun refreshAsteroids() {
-    //        withContext(Dispatchers.IO) {
-    //            val response = NeoApi.retrofitService
-    //                .getNextSevenDaysAsteroids(Constants.API_KEY).await()
-    //            val asteroids = parseAsteroidsJsonResult(JSONObject(response))
-    //            database.asteroidDao.insertAll(*asteroids.asDatabaseModel())
-    //        }
-    //    }
     suspend fun refreshAsteroids() {
         withContext(Dispatchers.IO) {
             val responseDeferred = NeoApi.retrofitService
@@ -68,7 +60,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
         }
     }
 
-    suspend fun removePreviousDayAsteroids() {
+    suspend fun deletePreviousDayAsteroids() {
         withContext(Dispatchers.IO) {
             database.asteroidDao.deleteYesterdayAsteroids(getYesterdayFormatted())
         }
