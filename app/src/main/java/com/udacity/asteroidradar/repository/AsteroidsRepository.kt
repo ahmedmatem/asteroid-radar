@@ -24,7 +24,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
      */
 
     val asteroids: LiveData<List<Asteroid>> = Transformations.map(
-        database.asteroidDao.getAsteroids()
+        database.asteroidDao.getAsteroids(getTodayFormatted())
     ) {
         it.asDomainModel()
     }
@@ -60,7 +60,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
             try {
                 val response = responseDeferred.await()
                 val asteroids = parseAsteroidsJsonResult(JSONObject(response))
-                database.asteroidDao.insertAll(*asteroids.asDatabaseModel())
+                database.asteroidDao.insertAllAsteroids(*asteroids.asDatabaseModel())
             } catch (e: Exception) {
                 throw Exception()
             }
@@ -70,7 +70,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
 
     suspend fun removePreviousDayAsteroids() {
         withContext(Dispatchers.IO) {
-            database.asteroidDao.deleteYesterdayData(getYesterdayFormatted())
+            database.asteroidDao.deleteYesterdayAsteroids(getYesterdayFormatted())
         }
     }
 }

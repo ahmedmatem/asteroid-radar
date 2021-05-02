@@ -1,7 +1,10 @@
 package com.udacity.asteroidradar.network
 
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.database.DatabaseAsteroid
+import com.udacity.asteroidradar.database.DatabasePod
+import com.udacity.asteroidradar.repository.getTodayFormatted
 
 /**
  * Convert Network results to database objects
@@ -21,6 +24,8 @@ fun ArrayList<Asteroid>.asDatabaseModel(): Array<DatabaseAsteroid> {
         )
     }.toTypedArray()
 }
-/**
- * Convert database results to Network objects
- */
+
+fun PictureOfDay.asDatabaseModel(): DatabasePod
+{
+    return DatabasePod(getTodayFormatted(), mediaType, title, url)
+}
